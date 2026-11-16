@@ -13,5 +13,6 @@ Nextwatch is an event-driven anime discovery and upcoming-release experience: **
 ## Current status
 - API/data permissions: **not yet approved**.
 - Data model, validator and fictional fixtures: in `lib/` (NW-002). Run `npm install`, then `npm test` and `npm run typecheck`.
-- UI, server, database, deployment: **not yet implemented**.
+- Radar (this week in your local time) on `/`, using fictional data. Run `npm run dev` and open http://localhost:3000.
+- Horizon, My Universe, follows, search, database, deployment: **not yet implemented**.
 - First milestone: **NW-001** (data rights and coverage), in parallel with mock-only prototype work.

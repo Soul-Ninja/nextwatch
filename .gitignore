@@ -2,3 +2,6 @@
 docs-before-trim.zip
 .claude/
 node_modules/
+.next/
+next-env.d.ts
+*.tsbuildinfo

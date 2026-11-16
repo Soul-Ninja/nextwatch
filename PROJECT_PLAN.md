@@ -125,7 +125,7 @@ Follows are a `string[]` of anime IDs in localStorage (section 6). A distributio
 ## 6. Architecture
 **One Next.js app with its data in the repo.** Pages are statically rendered from a typed, hand-curated seed file. There is no database, API layer, ingestion service or admin UI until a trigger in the table at the end of this section is met. The first prototype runs on visibly labeled fixtures in the same shape. Accounts, Pulse and notifications remain post-beta.
 
-- **Stack:** Next.js App Router, TypeScript, React, Tailwind CSS; Vitest + Playwright; lint, typecheck and CI before deployments. CSS transitions first; Motion for React only where it adds value. Installed so far: TypeScript and Vitest only.
+- **Stack:** Next.js App Router, TypeScript, React, Tailwind CSS; Vitest + Playwright; lint, typecheck and CI before deployments. CSS transitions first; Motion for React only where it adds value. Installed so far: Next.js, React, TypeScript and Vitest (no Tailwind or Playwright yet).
 - **Data:** one typed seed module holding `Anime`, `ReleaseEvent` and `SourceEvidence` records (section 5). A unit test asserts the invariants over the whole seed. Editing the file and committing is the editorial workflow; a rebuild publishes it. Git records who edited what. A changed date is appended to `ReleaseEvent.history` with its evidence, never overwritten, so the UI can show it.
 - **Code layout:** start with one `lib/` folder: types, seed and pure functions (group by local day, precision label, next event for a title). Split into `catalog` / `events` / `provenance` / `personalization` modules when a file becomes hard to navigate, not before.
 - **Routes:**
@@ -263,7 +263,7 @@ Weeks are planning targets, not commitments; provider permission or licensing wo
 **Gate:** enough real users, data quality, moderation capacity and reliable infrastructure. Do not delay first launch for these.
 
 ## 9. Tickets
-NW-002 is implemented (types, validator, fixtures; `npm test` and `npm run typecheck` pass) and awaits review; the rest are NOT STARTED. **NW-001 remains the blocker, with mock-only prototyping in parallel.** Do not begin live API integration until rights are cleared.
+NW-002 is implemented and awaits review. NW-004 is implemented on fixtures (`lib/radar.ts`, Radar on `/`; local-day grouping, DST and day-boundary tests pass; checked in a browser on mobile and keyboard) and awaits review and an unassisted fan test. NW-003 is partly done: a header and the home page exist; navigation and search do not. The rest are NOT STARTED. **NW-001 remains the blocker, with mock-only prototyping in parallel.** Do not begin live API integration until rights are cleared.
 
 | Ticket | Priority | Task | Requires | Acceptance |
 |---|---|---|---|---|

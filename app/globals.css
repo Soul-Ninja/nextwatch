@@ -1,0 +1,37 @@
+:root {
+  color-scheme: dark;
+  --bg: #09090d;
+  --surface: #16161e;
+  --text: #f5f5f8;
+  --muted: #b6b6c3;
+  --signal: #e83944;
+  --radar: #42d7c3;
+}
+
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.5 system-ui, sans-serif; }
+a { color: var(--radar); }
+a:focus-visible { outline: 2px solid var(--radar); outline-offset: 2px; }
+h1, h2, h3, p { margin: 0; }
+
+.site, main { max-width: 44rem; margin: 0 auto; padding: 1rem; }
+.brand { color: var(--text); font-weight: 700; font-size: 1.25rem; text-decoration: none; }
+
+.banner { border: 1px solid var(--signal); border-radius: 8px; padding: 0.75rem; margin-bottom: 1rem; }
+.zone, .empty, .meta { color: var(--muted); }
+.zone { margin: 0.25rem 0 1rem; }
+
+.days { display: flex; flex-wrap: wrap; gap: 0.5rem; list-style: none; padding: 0; margin: 0 0 1.5rem; }
+.days a { display: block; min-height: 44px; padding: 0.6rem 0.9rem; border-radius: 8px; background: var(--surface); text-decoration: none; }
+.count { color: var(--muted); margin-left: 0.35rem; }
+
+.day { margin-bottom: 1.5rem; scroll-margin-top: 1rem; }
+.day h2 { font-size: 1.1rem; margin-bottom: 0.5rem; }
+.day ol { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+
+.row { display: grid; grid-template-columns: 6.5rem 1fr; gap: 0.75rem; padding: 0.75rem; border-radius: 8px; background: var(--surface); }
+.row h3 { font-size: 1rem; }
+.time { font-weight: 600; }
+@media (max-width: 30rem) { .row { grid-template-columns: 1fr; gap: 0.25rem; } }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
