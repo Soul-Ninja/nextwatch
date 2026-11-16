@@ -115,55 +115,17 @@ Run without explaining the interface, with at least 5 anime fans on the first pr
 - First-session follow rate and 7-day return rate: establish baselines rather than inventing growth claims.
 
 ## 5. Domain model
-Conceptual TypeScript types; NW-002 finalizes them.
+The source of truth is code, not this section:
+- [`lib/types.ts`](lib/types.ts) — `Anime`, `ReleaseEvent`, `ReleaseWindow`, `SourceEvidence`, `Seed`. `ReleaseWindow` is a union per precision, so the compiler rejects an instant on a vague window.
+- [`lib/validate.ts`](lib/validate.ts) — `seedProblems(seed)` checks every rule types cannot: UTC instants and real calendar dates, IANA timezones, ISO region codes, https sources, unique IDs and slugs, references, broadcast statuses only on broadcasts, streaming statuses only with a region and platform, no `SCHEDULED` + `TBA`, and `DELAYED` only with the previous window in `history`.
+- [`lib/seed.ts`](lib/seed.ts) — fictional fixtures (`fictional: true`), one per edge case.
 
-```ts
-type DatePrecision = 'EXACT' | 'DAY' | 'MONTH' | 'SEASON' | 'YEAR' | 'TBA';
-type EventKind =
-  | 'TV_BROADCAST' | 'STREAMING_RELEASE' | 'THEATRICAL_RELEASE'
-  | 'TRAILER' | 'ANNOUNCEMENT';
-type EventStatus = // same list as section 3
-  | 'ANNOUNCED' | 'IN_PRODUCTION' | 'SCHEDULED' | 'DELAYED'
-  | 'BROADCAST_AIRING' | 'BROADCAST_AIRED'
-  | 'STREAMING_CONFIRMED' | 'STREAMING_AVAILABLE'
-  | 'RELEASED' | 'UNKNOWN';
-
-interface Anime {
-  id: string; slug: string; titles: Record<string, string>;
-  format?: 'TV' | 'MOVIE' | 'OVA' | 'ONA' | 'SPECIAL';
-  studios?: string[]; genres?: string[];
-  relations?: Array<{ animeId: string; type: 'SEQUEL' | 'PREQUEL' | 'ADAPTATION' | 'OTHER' }>;
-}
-interface ReleaseWindow {
-  precision: DatePrecision;
-  instantUtc?: string; // ISO 8601 only when EXACT
-  localDate?: string; // YYYY-MM-DD for DAY precision
-  month?: string; year?: number;
-  season?: 'WINTER' | 'SPRING' | 'SUMMER' | 'FALL';
-  timezone?: string; // when source expresses a local time
-}
-interface ReleaseEvent {
-  id: string; animeId: string; kind: EventKind;
-  episode?: number; window: ReleaseWindow;
-  status: EventStatus; region?: string; platform?: string;
-  language?: string; evidenceIds: string[];
-  lastVerifiedAt?: string; updatedAt: string;
-  history?: Array<{ changedAt: string; previous: ReleaseWindow; evidenceId: string }>;
-}
-interface SourceEvidence {
-  id: string; sourceName: string; url: string;
-  claim: string; observedAt: string; confidence: 'OFFICIAL' | 'SECONDARY' | 'UNVERIFIED';
-  rightsStatus: 'APPROVED' | 'PENDING' | 'RESTRICTED';
-}
-// Follows are a string[] of anime IDs in localStorage (section 6).
-```
-
-**Invariants:** `instantUtc` is required iff `precision=EXACT`; month/season/year windows never create fabricated instants. A distribution event is scoped to its region and platform; missing scope means unknown, not worldwide. A changed window appends the previous one to `history` with its evidence.
+Follows are a `string[]` of anime IDs in localStorage (section 6). A distribution event without a region means unknown scope, not worldwide.
 
 ## 6. Architecture
 **One Next.js app with its data in the repo.** Pages are statically rendered from a typed, hand-curated seed file. There is no database, API layer, ingestion service or admin UI until a trigger in the table at the end of this section is met. The first prototype runs on visibly labeled fixtures in the same shape. Accounts, Pulse and notifications remain post-beta.
 
-- **Stack:** Next.js App Router, TypeScript, React, Tailwind CSS; Vitest + Playwright; lint, typecheck and CI before deployments. CSS transitions first; Motion for React only where it adds value. Proposed, not installed.
+- **Stack:** Next.js App Router, TypeScript, React, Tailwind CSS; Vitest + Playwright; lint, typecheck and CI before deployments. CSS transitions first; Motion for React only where it adds value. Installed so far: TypeScript and Vitest only.
 - **Data:** one typed seed module holding `Anime`, `ReleaseEvent` and `SourceEvidence` records (section 5). A unit test asserts the invariants over the whole seed. Editing the file and committing is the editorial workflow; a rebuild publishes it. Git records who edited what. A changed date is appended to `ReleaseEvent.history` with its evidence, never overwritten, so the UI can show it.
 - **Code layout:** start with one `lib/` folder: types, seed and pure functions (group by local day, precision label, next event for a title). Split into `catalog` / `events` / `provenance` / `personalization` modules when a file becomes hard to navigate, not before.
 - **Routes:**
@@ -301,7 +263,7 @@ Weeks are planning targets, not commitments; provider permission or licensing wo
 **Gate:** enough real users, data quality, moderation capacity and reliable infrastructure. Do not delay first launch for these.
 
 ## 9. Tickets
-All NOT STARTED. **Start with NW-001, plus mock-only prototyping in parallel.** Do not begin live API integration until rights are cleared.
+NW-002 is implemented (types, validator, fixtures; `npm test` and `npm run typecheck` pass) and awaits review; the rest are NOT STARTED. **NW-001 remains the blocker, with mock-only prototyping in parallel.** Do not begin live API integration until rights are cleared.
 
 | Ticket | Priority | Task | Requires | Acceptance |
 |---|---|---|---|---|
@@ -414,6 +376,5 @@ Proposed and pending project-owner approval, except DEC-008.
 - Primary launch markets and translations? Default: English and viewer-local time.
 - Are all movie premieres tracked globally, or Japan-first with transparent territory labels?
 - What brand/domain options are actually available?
-- `EventStatus` now uses the full section 3 vocabulary. The earlier architecture type lacked `BROADCAST_AIRING`, `STREAMING_CONFIRMED` and `STREAMING_AVAILABLE`; confirm before NW-002.
 
 These must be resolved before claiming global completeness.
