@@ -15,5 +15,6 @@ Nextwatch is an event-driven anime discovery and upcoming-release experience: **
 - Data model, validator and fictional fixtures: in `lib/` (NW-002). Run `npm install`, then `npm test` and `npm run typecheck`.
 - Radar (this week in your local time) on `/`, using fictional data. Run `npm run dev` and open http://localhost:3000.
 - One-click follows (saved in this browser) and My Universe at `/my-universe`.
-- Horizon, search, database, deployment: **not yet implemented**.
+- Horizon at `/horizon`: upcoming titles by season, filterable by format.
+- Search, title detail pages, database, deployment: **not yet implemented**.
 - First milestone: **NW-001** (data rights and coverage), in parallel with mock-only prototype work.

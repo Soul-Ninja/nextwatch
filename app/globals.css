@@ -53,3 +53,4 @@ h1, h2, h3, p { margin: 0; }
 .card { display: grid; gap: 0.25rem; padding: 0.75rem; border-radius: 8px; background: var(--surface); }
 .card h3 { font-size: 1rem; }
 .badge { display: inline-block; margin-left: 0.5rem; padding: 0 0.5rem; border: 1px solid var(--signal); border-radius: 999px; font-size: 0.85rem; }
+.days a[aria-current] { background: var(--radar); color: var(--bg); }
