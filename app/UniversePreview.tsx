@@ -1,9 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { seed } from '../lib/seed';
 import { span, upcomingFor } from '../lib/universe';
 import { ReleaseCard } from './ReleaseCard';
+import { useSeed } from './SeedProvider';
 import { useFollows } from './useFollows';
 import { useViewer } from './useViewer';
 
@@ -11,6 +11,7 @@ const PREVIEW_SIZE = 3;
 
 /** Home-page glimpse of My Universe: the soonest followed releases, or an invitation for new visitors. */
 export function UniversePreview({ builtAt }: { builtAt: string }) {
+  const seed = useSeed();
   const view = useViewer(builtAt);
   const { ids, ready } = useFollows();
   if (!ready) return null; // the browser's follow list is unknown until hydration; render nothing rather than a wrong empty state

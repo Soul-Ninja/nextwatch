@@ -8,3 +8,4 @@ graphify-out/
 .graphify_*
 playwright-report/
 test-results/
+!.env.example

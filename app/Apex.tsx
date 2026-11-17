@@ -3,15 +3,16 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { countdown } from '../lib/countdown';
-import { seed } from '../lib/seed';
 import { titleOf, whereLabel, windowLabel } from '../lib/universe';
 import { FollowButton } from './FollowButton';
+import { useSeed } from './SeedProvider';
 import { useViewer } from './useViewer';
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
 /** The editorially featured release. A countdown appears only for an exact, still-future time. */
 export function Apex({ builtAt }: { builtAt: string }) {
+  const seed = useSeed();
   const view = useViewer(builtAt);
   const [tick, setTick] = useState<string | null>(null);
   useEffect(() => {

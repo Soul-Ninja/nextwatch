@@ -3,10 +3,9 @@
 import Link from 'next/link';
 import { useState } from 'react';
 import { localDate, radarWeek, type RadarItem } from '../lib/radar';
-// shortcut: the whole seed ships to the browser so it can regroup by local day; filter server-side once the seed grows.
-import { seed } from '../lib/seed';
 import { STATUS_LABEL, titleOf, whereLabel } from '../lib/universe';
 import { FollowButton } from './FollowButton';
+import { useSeed } from './SeedProvider';
 import { Sources } from './Sources';
 import { useViewer } from './useViewer';
 
@@ -20,13 +19,19 @@ const dayLabel = (date: string, style: 'long' | 'short') => {
 const timeLabel = (instant: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-US', { timeZone, hour: 'numeric', minute: '2-digit' }).format(new Date(instant));
 
+// A day-only date belongs to the source's zone (e.g. Japan), which can be a day off from the viewer's.
+const untimedLabel = ({ event }: RadarItem) => {
+  const zone = event.window.precision === 'DAY' ? event.window.timezone : undefined;
+  return zone ? `${zone.split('/').pop()!.replace(/_/g, ' ')} date, time not announced` : 'Time not announced';
+};
+
 function Row({ item, zone }: { item: RadarItem; zone: string }) {
   const { event, anime } = item;
   const title = titleOf(anime);
   return (
     <li className="row">
       <p className="time">
-        {item.instantUtc ? <time dateTime={item.instantUtc}>{timeLabel(item.instantUtc, zone)}</time> : 'Time not announced'}
+        {item.instantUtc ? <time dateTime={item.instantUtc}>{timeLabel(item.instantUtc, zone)}</time> : untimedLabel(item)}
       </p>
       <div>
         <h4>
@@ -42,6 +47,7 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
 }
 
 export function Radar({ builtAt }: { builtAt: string }) {
+  const seed = useSeed(); // shortcut: all upcoming data ships to the browser so it can regroup by local day; filter server-side once it grows.
   const view = useViewer(builtAt);
   const [weekOffset, setWeekOffset] = useState(0);
   const week = radarWeek(seed, view.zone, view.now, weekOffset);

@@ -2,20 +2,21 @@
 
 import Link from 'next/link';
 import { horizonGroups } from '../../lib/horizon';
-import { seed } from '../../lib/seed';
 import type { Anime } from '../../lib/types';
 import { upcomingFor } from '../../lib/universe';
 import { ReleaseCard } from '../ReleaseCard';
+import { useSeed } from '../SeedProvider';
 import { useViewer } from '../useViewer';
 
 const FORMAT_LABELS: Record<NonNullable<Anime['format']>, string> = {
   TV: 'TV', MOVIE: 'Movies', OVA: 'OVA', ONA: 'ONA', SPECIAL: 'Specials',
 };
-// Only offer formats that exist in the data, so no filter can lead to a guaranteed empty page.
-const FORMATS = [...new Set(seed.anime.flatMap((a) => a.format ?? []))];
 
 export function Horizon({ format: param, builtAt }: { format?: string; builtAt: string }) {
+  const seed = useSeed();
   const view = useViewer(builtAt);
+  // Only offer formats that exist in the data, so no filter can lead to a guaranteed empty page.
+  const FORMATS = [...new Set(seed.anime.flatMap((a) => a.format ?? []))];
 
   const format = FORMATS.find((f) => f === param); // ignore unknown values instead of showing nothing
   const items = upcomingFor(seed, seed.anime.filter((a) => !format || a.format === format).map((a) => a.id), view.now)

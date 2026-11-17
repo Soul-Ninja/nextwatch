@@ -1,13 +1,15 @@
-import { seed } from '../lib/seed';
-import type { ReleaseEvent } from '../lib/types';
+'use client';
 
-const evidenceById = new Map(seed.evidence.map((e) => [e.id, e]));
+import type { ReleaseEvent } from '../lib/types';
+import { useSeed } from './SeedProvider';
+
 const shortDate = (instant: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(instant));
 
 /** Where a release claim comes from, how sure it is, and when it was last checked. */
 export function Sources({ event, zone }: { event: ReleaseEvent; zone: string }) {
-  const sources = event.evidenceIds.flatMap((id) => evidenceById.get(id) ?? []);
+  const { evidence } = useSeed();
+  const sources = event.evidenceIds.flatMap((id) => evidence.find((e) => e.id === id) ?? []);
   return (
     <p className="meta">
       Source:{' '}

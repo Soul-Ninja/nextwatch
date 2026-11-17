@@ -1,15 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { seed } from '../../../lib/seed';
 import type { Anime } from '../../../lib/types';
 import { span, STATUS_LABEL, titleOf, whereLabel, windowLabel } from '../../../lib/universe';
 import { FollowButton } from '../../FollowButton';
+import { useSeed } from '../../SeedProvider';
 import { Sources } from '../../Sources';
 import { useViewer } from '../../useViewer';
 
-const animeById = new Map(seed.anime.map((a) => [a.id, a]));
-const evidenceById = new Map(seed.evidence.map((e) => [e.id, e]));
 const RELATION: Record<NonNullable<Anime['relations']>[number]['type'], [to: string, from: string]> = {
   SEQUEL: ['Sequel to', 'Has a sequel:'],
   PREQUEL: ['Prequel to', 'Has a prequel:'],
@@ -20,8 +18,12 @@ const shortDate = (instant: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-US', { timeZone, month: 'short', day: 'numeric', year: 'numeric' }).format(new Date(instant));
 
 export function AnimeDetail({ animeId, builtAt }: { animeId: string; builtAt: string }) {
+  const seed = useSeed();
   const view = useViewer(builtAt);
-  const anime = animeById.get(animeId)!;
+  const animeById = new Map(seed.anime.map((a) => [a.id, a]));
+  const evidenceById = new Map(seed.evidence.map((e) => [e.id, e]));
+  const anime = animeById.get(animeId);
+  if (!anime) return null;
   const title = titleOf(anime);
   const facts = [anime.format, ...(anime.studios ?? []), ...(anime.genres ?? [])].filter(Boolean).join(' · ');
 

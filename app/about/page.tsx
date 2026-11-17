@@ -1,10 +1,11 @@
 import type { Metadata } from 'next';
 import { CORRECTIONS_URL } from '../../lib/site';
-import { seed } from '../../lib/seed';
+import { loadSeed } from '../../lib/data';
 
 export const metadata: Metadata = { title: 'About · Nextwatch' };
 
-export default function AboutPage() {
+export default async function AboutPage() {
+  const seed = await loadSeed();
   return (
     <main className="prose">
       <h1>About Nextwatch</h1>
@@ -23,7 +24,11 @@ export default function AboutPage() {
       {seed.fictional ? (
         <p>Everything on this site is currently <strong>fictional sample data</strong> used to build and test it. No real titles, dates, platforms or sources are shown yet.</p>
       ) : (
-        <p>Each release lists its sources and when they were last checked. Sources marked “unverified” are not official announcements.</p>
+        <>
+          <p>Release dates come from <a href="https://www.themoviedb.org" rel="noopener noreferrer">TMDB</a> (The Movie Database), a community-built film and TV database, and are refreshed every few hours. TMDB lists TV episodes by the date they air in Japan, without a time, so those show as “time not announced”.</p>
+          <p>Each release lists its source and when it was last checked. Sources marked “unverified” are not official announcements.</p>
+          <p className="meta">This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</p>
+        </>
       )}
 
       <h2 id="privacy">Privacy</h2>

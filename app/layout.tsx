@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import type { ReactNode } from 'react';
-import { seed } from '../lib/seed';
+import { loadSeed } from '../lib/data';
 import { CORRECTIONS_URL, SITE_URL } from '../lib/site';
 import { MainNav } from './MainNav';
+import { SeedProvider } from './SeedProvider';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -12,7 +13,8 @@ export const metadata: Metadata = {
   description: 'Upcoming anime broadcasts and releases in your local time.',
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default async function RootLayout({ children }: { children: ReactNode }) {
+  const seed = await loadSeed();
   return (
     <html lang="en">
       <body>
@@ -31,7 +33,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             Sample data: every title, time, platform and source on this site is fictional.
           </p>
         )}
-        {children}
+        <SeedProvider seed={seed}>{children}</SeedProvider>
         <footer className="site-footer">
           <ul>
             <li><Link href="/about#method">How dates work</Link></li>
@@ -39,6 +41,11 @@ export default function RootLayout({ children }: { children: ReactNode }) {
             <li><Link href="/about#privacy">Privacy</Link></li>
             <li><a href={CORRECTIONS_URL} rel="noopener noreferrer">Report a correction</a></li>
           </ul>
+          {!seed.fictional && (
+            <p className="meta">
+              Release data from <a href="https://www.themoviedb.org" rel="noopener noreferrer">TMDB</a>. This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.
+            </p>
+          )}
         </footer>
       </body>
     </html>

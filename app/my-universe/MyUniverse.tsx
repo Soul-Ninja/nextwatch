@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { seed } from '../../lib/seed';
 import { upcomingFor } from '../../lib/universe';
 import { ReleaseCard } from '../ReleaseCard';
+import { useSeed } from '../SeedProvider';
 import { useFollows } from '../useFollows';
 
 function List() {
+  const seed = useSeed();
   const { ids, ready } = useFollows();
   if (!ready) return <p className="empty">Loading your follows…</p>;
 
