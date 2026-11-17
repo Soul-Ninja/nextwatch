@@ -36,6 +36,8 @@ describe('mapTv', () => {
     expect(mapTv(tv({ name: '' }), NOW)).toBeNull();
     expect(mapTv(tv({ id: 'x' }), NOW)).toBeNull();
     expect(mapTv(tv({ name: '葬送のフリーレン' }), NOW)!.anime.slug).toBe('title-101');
+    expect(mapTv(tv({ name: 'The Laid-Off Cheat-Granting Mage Enjoys a Second Lease on Life' }), NOW)!.anime.slug)
+      .toBe('the-laid-off-cheat-granting-mage-enjoys-a-second-lease-on-101');
   });
 });
 
@@ -74,6 +76,15 @@ describe('tmdbGet', () => {
     await expect(tmdbGet('/x', 'secret', fetchImpl, sleep)).resolves.toEqual({ ok: 1 });
     expect(sleep).toHaveBeenCalledWith(2000);
     expect(fetchImpl.mock.calls[0]![1].headers.Authorization).toBe('Bearer secret');
+  });
+
+  it('retries a dropped connection, then gives up after 3 attempts', async () => {
+    const sleep = vi.fn().mockResolvedValue(undefined);
+    const flaky = vi.fn().mockRejectedValueOnce(new TypeError('fetch failed')).mockResolvedValueOnce(response(200, { ok: 2 }));
+    await expect(tmdbGet('/x', 't', flaky, sleep)).resolves.toEqual({ ok: 2 });
+    const down = vi.fn().mockRejectedValue(new TypeError('fetch failed'));
+    await expect(tmdbGet('/x', 't', down, sleep)).rejects.toThrow('fetch failed');
+    expect(down).toHaveBeenCalledTimes(3);
   });
 
   it('gives up after 3 attempts and does not retry a 401', async () => {

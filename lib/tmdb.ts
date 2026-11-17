@@ -24,7 +24,8 @@ const nonEmpty = (s: unknown): s is string => typeof s === 'string' && s.trim().
 
 function slugFor(name: string, id: number): string {
   const words = name.normalize('NFD').replace(/\p{Diacritic}/gu, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
-  return words ? `${words.slice(0, 60).replace(/-$/, '')}-${id}` : `title-${id}`; // id keeps slugs unique
+  const short = words.length > 60 ? words.slice(0, 61).replace(/-[^-]*$/, '') : words; // cut at a word boundary
+  return short ? `${short}-${id}` : `title-${id}`; // id keeps slugs unique
 }
 
 function titles(name: string, original: string): Record<string, string> {
@@ -101,14 +102,24 @@ export function mapMovie(movie: MovieSummary & { status?: string }, dates: Relea
 
 type Fetch = typeof fetch;
 
-/** GET a TMDB path, waiting and retrying on 429 and 5xx. Throws after 3 attempts so a broken feed is loud, not silent. */
+/**
+ * GET a TMDB path, waiting and retrying on dropped connections, timeouts, 429 and 5xx.
+ * Throws after 3 attempts so a broken feed is loud, not silent.
+ */
 export async function tmdbGet<T>(path: string, token: string, fetchImpl: Fetch = fetch, sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))): Promise<T> {
   for (let attempt = 1; ; attempt++) {
-    const res = await fetchImpl(`${API}${path}`, {
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-      signal: AbortSignal.timeout(10_000),
-      next: { revalidate: REVALIDATE_SECONDS },
-    } as RequestInit);
+    let res: Response;
+    try {
+      res = await fetchImpl(`${API}${path}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
+        signal: AbortSignal.timeout(10_000),
+        next: { revalidate: REVALIDATE_SECONDS },
+      } as RequestInit);
+    } catch (error) {
+      if (attempt >= 3) throw new Error(`TMDB ${path} failed: ${String(error)}`);
+      await sleep(1000 * attempt);
+      continue;
+    }
     if (res.ok) return (await res.json()) as T;
     const retryable = res.status === 429 || res.status >= 500;
     if (!retryable || attempt >= 3) throw new Error(`TMDB ${path} failed: HTTP ${res.status}`);
