@@ -36,6 +36,12 @@ describe('radarWeek', () => {
       ['2026-11-15', '2026-11-16', '2026-11-17', '2026-11-18', '2026-11-19', '2026-11-20', '2026-11-21']);
   });
 
+  it('moves by whole calendar weeks', () => {
+    expect(radarWeek(seed, 'America/Los_Angeles', NOW, 1)[0]?.date).toBe('2026-11-22');
+    expect(radarWeek(seed, 'America/Los_Angeles', NOW, -1)[0]?.date).toBe('2026-11-08');
+    expect(radarWeek(seed, 'America/Los_Angeles', '2027-03-08T07:30:00Z', 1)[0]?.date).toBe('2027-03-14'); // 23:30 PST, across DST
+  });
+
   it('groups the same UTC broadcast under each viewer’s own day', () => {
     expect(ids(radarWeek(seed, 'Asia/Kolkata', NOW), '2026-11-20')).toContain('e-starfall-ep5-jp');
     expect(ids(radarWeek(seed, 'Asia/Tokyo', NOW), '2026-11-21')).toContain('e-starfall-ep5-jp');

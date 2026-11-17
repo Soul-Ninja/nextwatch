@@ -1,10 +1,13 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 import { seed } from '../lib/seed';
+import { CORRECTIONS_URL, SITE_URL } from '../lib/site';
 import { MainNav } from './MainNav';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: 'Nextwatch',
   description: 'Upcoming anime broadcasts and releases in your local time.',
 };
@@ -14,7 +17,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="en">
       <body>
         <header className="site">
-          <a href="/" className="brand">Nextwatch</a>
+          <Link href="/" className="brand">Nextwatch</Link>
           <MainNav />
           {/* A plain GET form, so search works before (or without) JavaScript. */}
           <form action="/search" role="search" className="site-search">
@@ -29,6 +32,14 @@ export default function RootLayout({ children }: { children: ReactNode }) {
           </p>
         )}
         {children}
+        <footer className="site-footer">
+          <ul>
+            <li><Link href="/about#method">How dates work</Link></li>
+            <li><Link href="/about#data">Data sources</Link></li>
+            <li><Link href="/about#privacy">Privacy</Link></li>
+            <li><a href={CORRECTIONS_URL} rel="noopener noreferrer">Report a correction</a></li>
+          </ul>
+        </footer>
       </body>
     </html>
   );

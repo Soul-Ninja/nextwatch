@@ -28,12 +28,12 @@ export function addDays(date: string, days: number): string {
 const RADAR_KINDS = new Set<ReleaseEvent['kind']>(['TV_BROADCAST', 'STREAMING_RELEASE']);
 
 /**
- * Seven viewer-local days starting today. Exact events land on the viewer's calendar day;
+ * Seven viewer-local days starting today (or whole weeks before/after with weekOffset). Exact events land on the viewer's calendar day;
  * day-only events stay on the date the source gave, with no invented time.
  */
-export function radarWeek(seed: Seed, timeZone: string, now: string): RadarDay[] {
+export function radarWeek(seed: Seed, timeZone: string, now: string, weekOffset = 0): RadarDay[] {
   const animeById = new Map(seed.anime.map((a) => [a.id, a]));
-  const today = localDate(now, timeZone);
+  const today = addDays(localDate(now, timeZone), weekOffset * 7); // calendar days, so DST cannot skip one
   const days: RadarDay[] = Array.from({ length: 7 }, (_, i) => ({ date: addDays(today, i), items: [] }));
   const byDate = new Map(days.map((d) => [d.date, d]));
 

@@ -1,15 +1,13 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { searchAnime } from '../../lib/search';
 import { seed } from '../../lib/seed';
 import { upcomingFor } from '../../lib/universe';
 import { ReleaseCard } from '../ReleaseCard';
 import { useViewer } from '../useViewer';
 
-export function SearchResults({ builtAt }: { builtAt: string }) {
+export function SearchResults({ query, builtAt }: { query: string; builtAt: string }) {
   const view = useViewer(builtAt);
-  const query = (useSearchParams().get('q') ?? '').slice(0, 100); // bound user input
   const results = upcomingFor(seed, searchAnime(seed, query).map((a) => a.id), view.now);
 
   return (

@@ -1,10 +1,10 @@
 'use client';
 
 import Link from 'next/link';
-import { radarWeek, type RadarItem } from '../lib/radar';
+import { useState } from 'react';
+import { localDate, radarWeek, type RadarItem } from '../lib/radar';
 // shortcut: the whole seed ships to the browser so it can regroup by local day; filter server-side once the seed grows.
 import { seed } from '../lib/seed';
-import type { ReleaseEvent } from '../lib/types';
 import { STATUS_LABEL, titleOf, whereLabel } from '../lib/universe';
 import { FollowButton } from './FollowButton';
 import { Sources } from './Sources';
@@ -43,24 +43,32 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
 
 export function Radar({ builtAt }: { builtAt: string }) {
   const view = useViewer(builtAt);
-
-  const week = radarWeek(seed, view.zone, view.now);
+  const [weekOffset, setWeekOffset] = useState(0);
+  const week = radarWeek(seed, view.zone, view.now, weekOffset);
+  const today = localDate(view.now, view.zone);
+  const range = `${dayLabel(week[0]!.date, 'short')} – ${dayLabel(week[6]!.date, 'short')}`;
 
   return (
     <section aria-labelledby="radar-heading">
-      <h2 id="radar-heading">This week’s Radar</h2>
+      <h2 id="radar-heading">{weekOffset === 0 ? 'This week’s Radar' : `Radar · ${range}`}</h2>
       <p className="zone">
         {view.local
           ? `Days and times in your timezone (${view.zone}).`
           : `Days and times in Japan time (${view.zone}). Your local times appear once the page finishes loading.`}
       </p>
 
+      <div className="week-nav">
+        <button type="button" className="follow" onClick={() => setWeekOffset((w) => w - 1)}>← Previous week</button>
+        {weekOffset !== 0 && <button type="button" className="follow" onClick={() => setWeekOffset(0)}>This week</button>}
+        <button type="button" className="follow" onClick={() => setWeekOffset((w) => w + 1)}>Next week →</button>
+      </div>
+
       <nav aria-label="Jump to day">
         <ul className="days">
-          {week.map((day, i) => (
+          {week.map((day) => (
             <li key={day.date}>
               <a href={`#day-${day.date}`}>
-                {i === 0 ? 'Today' : dayLabel(day.date, 'short')}
+                {day.date === today ? 'Today' : dayLabel(day.date, 'short')}
                 <span className="count">{day.items.length}</span>
                 <span className="sr-only"> {day.items.length === 1 ? 'release' : 'releases'}</span>
               </a>
@@ -69,9 +77,9 @@ export function Radar({ builtAt }: { builtAt: string }) {
         </ul>
       </nav>
 
-      {week.map((day, i) => (
+      {week.map((day) => (
         <section key={day.date} id={`day-${day.date}`} className="day" aria-labelledby={`day-${day.date}-heading`}>
-          <h3 id={`day-${day.date}-heading`}>{i === 0 ? 'Today · ' : ''}{dayLabel(day.date, 'long')}</h3>
+          <h3 id={`day-${day.date}-heading`}>{day.date === today ? 'Today · ' : ''}{dayLabel(day.date, 'long')}</h3>
           {day.items.length > 0 ? (
             <ol>{day.items.map((item) => <Row key={item.event.id} item={item} zone={view.zone} />)}</ol>
           ) : (

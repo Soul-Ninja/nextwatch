@@ -13,12 +13,12 @@ const pad = (n: number) => String(n).padStart(2, '0');
 /** The editorially featured release. A countdown appears only for an exact, still-future time. */
 export function Apex({ builtAt }: { builtAt: string }) {
   const view = useViewer(builtAt);
-  const [now, setNow] = useState<string | null>(null); // null until the browser clock is known
+  const [tick, setTick] = useState<string | null>(null);
   useEffect(() => {
-    setNow(new Date().toISOString());
-    const timer = setInterval(() => setNow(new Date().toISOString()), 1000);
+    const timer = setInterval(() => setTick(new Date().toISOString()), 1000);
     return () => clearInterval(timer);
   }, []);
+  const now = tick ?? (view.local ? view.now : null); // null until the browser clock is known
 
   const event = seed.events.find((e) => e.id === seed.apexEventId);
   const anime = event && seed.anime.find((a) => a.id === event.animeId);

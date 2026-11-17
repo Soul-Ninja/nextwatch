@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
 import { horizonGroups } from '../../lib/horizon';
 import { seed } from '../../lib/seed';
 import type { Anime } from '../../lib/types';
@@ -15,10 +14,9 @@ const FORMAT_LABELS: Record<NonNullable<Anime['format']>, string> = {
 // Only offer formats that exist in the data, so no filter can lead to a guaranteed empty page.
 const FORMATS = [...new Set(seed.anime.flatMap((a) => a.format ?? []))];
 
-export function Horizon({ builtAt }: { builtAt: string }) {
+export function Horizon({ format: param, builtAt }: { format?: string; builtAt: string }) {
   const view = useViewer(builtAt);
 
-  const param = useSearchParams().get('format');
   const format = FORMATS.find((f) => f === param); // ignore unknown values instead of showing nothing
   const items = upcomingFor(seed, seed.anime.filter((a) => !format || a.format === format).map((a) => a.id), view.now)
     .filter((i) => i.next);
