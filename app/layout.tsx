@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactNode } from 'react';
+import { seed } from '../lib/seed';
+import { MainNav } from './MainNav';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -13,7 +15,13 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body>
         <header className="site">
           <a href="/" className="brand">Nextwatch</a>
+          <MainNav />
         </header>
+        {seed.fictional && (
+          <p role="note" className="banner">
+            Sample data: every title, time, platform and source on this site is fictional.
+          </p>
+        )}
         {children}
       </body>
     </html>

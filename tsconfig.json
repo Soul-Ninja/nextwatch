@@ -15,6 +15,7 @@
     "noEmit": true,
     "allowJs": true,
     "incremental": true,
+    "tsBuildInfoFile": ".next/cache/tsconfig.tsbuildinfo",
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "react-jsx",

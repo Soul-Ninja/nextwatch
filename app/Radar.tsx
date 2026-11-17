@@ -5,12 +5,13 @@ import { radarWeek, type RadarItem } from '../lib/radar';
 // shortcut: the whole seed ships to the browser so it can regroup by local day; filter server-side once the seed grows.
 import { seed } from '../lib/seed';
 import type { ReleaseEvent } from '../lib/types';
+import { whereLabel } from '../lib/universe';
+import { FollowButton } from './FollowButton';
 
 // The server cannot know the viewer's zone, so the pre-rendered page uses Japan time and says so.
 const FALLBACK_ZONE = 'Asia/Tokyo';
 
 const evidenceById = new Map(seed.evidence.map((e) => [e.id, e]));
-const regionNames = new Intl.DisplayNames(['en'], { type: 'region' });
 
 const STATUS: Record<ReleaseEvent['status'], string> = {
   ANNOUNCED: 'Announced',
@@ -35,14 +36,9 @@ const dayLabel = (date: string, style: 'long' | 'short') => {
 const timeLabel = (instant: string, timeZone: string) =>
   new Intl.DateTimeFormat('en-US', { timeZone, hour: 'numeric', minute: '2-digit' }).format(new Date(instant));
 
-function where(event: ReleaseEvent): string {
-  const country = event.region ? regionNames.of(event.region) ?? event.region : 'region unknown';
-  if (event.kind === 'STREAMING_RELEASE') return `Streaming on ${event.platform ?? 'an unconfirmed platform'} in ${country}`;
-  return `TV broadcast in ${country}${event.platform ? ` on ${event.platform}` : ''}`;
-}
-
 function Row({ item, zone }: { item: RadarItem; zone: string }) {
   const { event, anime } = item;
+  const title = Object.values(anime.titles)[0] ?? anime.slug;
   const sources = event.evidenceIds.flatMap((id) => evidenceById.get(id) ?? []);
   return (
     <li className="row">
@@ -51,10 +47,10 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
       </p>
       <div>
         <h3>
-          {Object.values(anime.titles)[0]}
+          {title}
           {event.episode !== undefined && ` · Episode ${event.episode}`}
         </h3>
-        <p>{where(event)} · {STATUS[event.status]}</p>
+        <p>{whereLabel(event)} · {STATUS[event.status]}</p>
         <p className="meta">
           Source:{' '}
           {sources.map((s, i) => (
@@ -67,6 +63,7 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
           {event.lastVerifiedAt &&
             ` · checked ${new Intl.DateTimeFormat('en-US', { timeZone: zone, month: 'short', day: 'numeric' }).format(new Date(event.lastVerifiedAt))}`}
         </p>
+        <FollowButton animeId={anime.id} title={title} />
       </div>
     </li>
   );

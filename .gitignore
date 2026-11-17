@@ -4,4 +4,5 @@ docs-before-trim.zip
 node_modules/
 .next/
 next-env.d.ts
-*.tsbuildinfo
+graphify-out/
+.graphify_*

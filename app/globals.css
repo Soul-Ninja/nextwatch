@@ -35,3 +35,21 @@ h1, h2, h3, p { margin: 0; }
 @media (max-width: 30rem) { .row { grid-template-columns: 1fr; gap: 0.25rem; } }
 
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.follow { min-height: 44px; margin-top: 0.5rem; padding: 0 1rem; border: 1px solid var(--radar); border-radius: 8px; background: transparent; color: var(--radar); font: inherit; cursor: pointer; }
+.follow[aria-pressed='true'] { background: var(--radar); color: var(--bg); }
+.follow:disabled { opacity: 0.5; cursor: default; }
+.follow:focus-visible { outline: 2px solid var(--text); outline-offset: 2px; }
+
+.site { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.5rem; }
+.main-nav { display: flex; gap: 0.25rem; list-style: none; margin: 0; padding: 0; }
+.main-nav a { display: flex; align-items: center; min-height: 44px; padding: 0 0.75rem; border-radius: 8px; color: var(--muted); text-decoration: none; }
+.main-nav a[aria-current='page'] { color: var(--text); background: var(--surface); }
+.main-nav a:hover { color: var(--text); }
+.banner { max-width: calc(44rem - 2rem); margin: 0 auto 1rem; }
+@media (max-width: 46rem) { .banner { margin: 0 1rem 1rem; } }
+
+.cards { list-style: none; padding: 0; margin: 0; display: grid; gap: 0.5rem; }
+.card { display: grid; gap: 0.25rem; padding: 0.75rem; border-radius: 8px; background: var(--surface); }
+.card h3 { font-size: 1rem; }
+.badge { display: inline-block; margin-left: 0.5rem; padding: 0 0.5rem; border: 1px solid var(--signal); border-radius: 999px; font-size: 0.85rem; }
