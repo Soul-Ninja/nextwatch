@@ -1,30 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { radarWeek, type RadarItem } from '../lib/radar';
 // shortcut: the whole seed ships to the browser so it can regroup by local day; filter server-side once the seed grows.
 import { seed } from '../lib/seed';
 import type { ReleaseEvent } from '../lib/types';
-import { whereLabel } from '../lib/universe';
+import { STATUS_LABEL, titleOf, whereLabel } from '../lib/universe';
 import { FollowButton } from './FollowButton';
-
-// The server cannot know the viewer's zone, so the pre-rendered page uses Japan time and says so.
-const FALLBACK_ZONE = 'Asia/Tokyo';
-
-const evidenceById = new Map(seed.evidence.map((e) => [e.id, e]));
-
-const STATUS: Record<ReleaseEvent['status'], string> = {
-  ANNOUNCED: 'Announced',
-  IN_PRODUCTION: 'In production',
-  SCHEDULED: 'Scheduled',
-  DELAYED: 'Delayed',
-  BROADCAST_AIRING: 'On air now',
-  BROADCAST_AIRED: 'Aired',
-  STREAMING_CONFIRMED: 'Streaming date confirmed',
-  STREAMING_AVAILABLE: 'Available to stream',
-  RELEASED: 'Released',
-  UNKNOWN: 'Status unknown',
-};
+import { Sources } from './Sources';
+import { useViewer } from './useViewer';
 
 // Date-only strings are formatted in UTC so the label never shifts by a day.
 const dayLabel = (date: string, style: 'long' | 'short') => {
@@ -38,31 +22,19 @@ const timeLabel = (instant: string, timeZone: string) =>
 
 function Row({ item, zone }: { item: RadarItem; zone: string }) {
   const { event, anime } = item;
-  const title = Object.values(anime.titles)[0] ?? anime.slug;
-  const sources = event.evidenceIds.flatMap((id) => evidenceById.get(id) ?? []);
+  const title = titleOf(anime);
   return (
     <li className="row">
       <p className="time">
         {item.instantUtc ? <time dateTime={item.instantUtc}>{timeLabel(item.instantUtc, zone)}</time> : 'Time not announced'}
       </p>
       <div>
-        <h3>
-          {title}
+        <h4>
+          <Link href={`/anime/${anime.slug}`}>{title}</Link>
           {event.episode !== undefined && ` · Episode ${event.episode}`}
-        </h3>
-        <p>{whereLabel(event)} · {STATUS[event.status]}</p>
-        <p className="meta">
-          Source:{' '}
-          {sources.map((s, i) => (
-            <span key={s.id}>
-              {i > 0 && ', '}
-              <a href={s.url} rel="noopener noreferrer">{s.sourceName}</a>
-              {s.confidence !== 'OFFICIAL' && ' (unverified)'}
-            </span>
-          ))}
-          {event.lastVerifiedAt &&
-            ` · checked ${new Intl.DateTimeFormat('en-US', { timeZone: zone, month: 'short', day: 'numeric' }).format(new Date(event.lastVerifiedAt))}`}
-        </p>
+        </h4>
+        <p>{whereLabel(event)} · {STATUS_LABEL[event.status]}</p>
+        <Sources event={event} zone={zone} />
         <FollowButton animeId={anime.id} title={title} />
       </div>
     </li>
@@ -70,17 +42,13 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
 }
 
 export function Radar({ builtAt }: { builtAt: string }) {
-  const [view, setView] = useState({ zone: FALLBACK_ZONE, now: builtAt, local: false });
-
-  useEffect(() => {
-    setView({ zone: Intl.DateTimeFormat().resolvedOptions().timeZone, now: new Date().toISOString(), local: true });
-  }, []);
+  const view = useViewer(builtAt);
 
   const week = radarWeek(seed, view.zone, view.now);
 
   return (
     <section aria-labelledby="radar-heading">
-      <h1 id="radar-heading">This week’s Radar</h1>
+      <h2 id="radar-heading">This week’s Radar</h2>
       <p className="zone">
         {view.local
           ? `Days and times in your timezone (${view.zone}).`
@@ -103,7 +71,7 @@ export function Radar({ builtAt }: { builtAt: string }) {
 
       {week.map((day, i) => (
         <section key={day.date} id={`day-${day.date}`} className="day" aria-labelledby={`day-${day.date}-heading`}>
-          <h2 id={`day-${day.date}-heading`}>{i === 0 ? 'Today · ' : ''}{dayLabel(day.date, 'long')}</h2>
+          <h3 id={`day-${day.date}-heading`}>{i === 0 ? 'Today · ' : ''}{dayLabel(day.date, 'long')}</h3>
           {day.items.length > 0 ? (
             <ol>{day.items.map((item) => <Row key={item.event.id} item={item} zone={view.zone} />)}</ol>
           ) : (

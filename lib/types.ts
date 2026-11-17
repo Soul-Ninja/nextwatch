@@ -59,6 +59,7 @@ export interface SourceEvidence {
 
 export interface Seed {
   fictional: boolean; // true -> every page using this data must say so prominently
+  apexEventId?: string; // editorial pick featured at the top of the home page
   anime: Anime[];
   events: ReleaseEvent[];
   evidence: SourceEvidence[];

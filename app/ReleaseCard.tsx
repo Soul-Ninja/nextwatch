@@ -1,15 +1,16 @@
 'use client';
 
-import { windowLabel, whereLabel, type UniverseItem } from '../lib/universe';
+import Link from 'next/link';
+import { titleOf, windowLabel, whereLabel, type UniverseItem } from '../lib/universe';
 import { FollowButton } from './FollowButton';
 
 /** A title with its next release, as shown on Horizon and My Universe. */
 export function ReleaseCard({ item, zone }: { item: UniverseItem; zone: string }) {
   const { anime, next, dateChanged } = item;
-  const title = Object.values(anime.titles)[0] ?? anime.slug;
+  const title = titleOf(anime);
   return (
     <li className="card">
-      <h3>{title}</h3>
+      <h3><Link href={`/anime/${anime.slug}`}>{title}</Link></h3>
       {next ? (
         <>
           <p>

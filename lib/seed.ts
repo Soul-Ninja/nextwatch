@@ -4,6 +4,7 @@ import type { Seed } from './types';
 // Each event exists to cover one edge case named in its comment; keep them when editing.
 export const seed: Seed = {
   fictional: true,
+  apexEventId: 'e-starfall-ep5-jp',
   anime: [
     { id: 'a-starfall', slug: 'starfall-courier', titles: { en: 'Starfall Courier' }, format: 'TV', studios: ['Studio Example'], genres: ['Sci-Fi'] },
     { id: 'a-lantern', slug: 'lantern-tide', titles: { en: 'Lantern Tide' }, format: 'TV', genres: ['Drama'] },

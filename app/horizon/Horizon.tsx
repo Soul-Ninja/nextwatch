@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { useEffect, useState } from 'react';
 import { horizonGroups } from '../../lib/horizon';
 import { seed } from '../../lib/seed';
 import type { Anime } from '../../lib/types';
 import { upcomingFor } from '../../lib/universe';
 import { ReleaseCard } from '../ReleaseCard';
+import { useViewer } from '../useViewer';
 
 const FORMAT_LABELS: Record<NonNullable<Anime['format']>, string> = {
   TV: 'TV', MOVIE: 'Movies', OVA: 'OVA', ONA: 'ONA', SPECIAL: 'Specials',
@@ -16,10 +16,7 @@ const FORMAT_LABELS: Record<NonNullable<Anime['format']>, string> = {
 const FORMATS = [...new Set(seed.anime.flatMap((a) => a.format ?? []))];
 
 export function Horizon({ builtAt }: { builtAt: string }) {
-  const [view, setView] = useState({ zone: 'Asia/Tokyo', now: builtAt, local: false });
-  useEffect(() => {
-    setView({ zone: Intl.DateTimeFormat().resolvedOptions().timeZone, now: new Date().toISOString(), local: true });
-  }, []);
+  const view = useViewer(builtAt);
 
   const param = useSearchParams().get('format');
   const format = FORMATS.find((f) => f === param); // ignore unknown values instead of showing nothing

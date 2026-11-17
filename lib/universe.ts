@@ -73,3 +73,18 @@ export function whereLabel(event: ReleaseEvent): string {
   if (event.kind === 'TV_BROADCAST') return `TV broadcast in ${country}${event.platform ? ` on ${event.platform}` : ''}`;
   return event.kind === 'TRAILER' ? 'Trailer' : 'Announcement';
 }
+
+export const titleOf = (anime: Anime) => Object.values(anime.titles)[0] ?? anime.slug;
+
+export const STATUS_LABEL: Record<ReleaseEvent['status'], string> = {
+  ANNOUNCED: 'Announced',
+  IN_PRODUCTION: 'In production',
+  SCHEDULED: 'Scheduled',
+  DELAYED: 'Delayed',
+  BROADCAST_AIRING: 'On air now',
+  BROADCAST_AIRED: 'Aired',
+  STREAMING_CONFIRMED: 'Streaming date confirmed',
+  STREAMING_AVAILABLE: 'Available to stream',
+  RELEASED: 'Released',
+  UNKNOWN: 'Status unknown',
+};

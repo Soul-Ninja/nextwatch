@@ -1,4 +1,5 @@
 import type { Anime, ReleaseEvent, Seed } from './types';
+import { titleOf } from './universe';
 
 export interface RadarItem {
   event: ReleaseEvent;
@@ -44,7 +45,7 @@ export function radarWeek(seed: Seed, timeZone: string, now: string): RadarDay[]
     else if (w.precision === 'DAY') byDate.get(w.localDate)?.items.push({ event, anime });
   }
 
-  const title = (item: RadarItem) => Object.values(item.anime.titles)[0] ?? '';
+  const title = (item: RadarItem) => titleOf(item.anime);
   for (const day of days) {
     // Timed events first in time order; untimed after; ties by title so simultaneous releases keep a stable order.
     day.items.sort((a, b) =>

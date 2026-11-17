@@ -105,5 +105,9 @@ export function seedProblems(seed: Seed): string[] {
     }
   }
 
+  if (seed.apexEventId !== undefined && !seed.events.some((e) => e.id === seed.apexEventId)) {
+    add('apex', `unknown event ${seed.apexEventId}`);
+  }
+
   return problems;
 }

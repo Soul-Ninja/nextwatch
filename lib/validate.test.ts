@@ -91,6 +91,10 @@ describe('seedProblems rejects', () => {
     expect(problemsAfter((s) => { s.anime[1]!.slug = s.anime[0]!.slug; })).toMatch(/duplicate slug/);
   });
 
+  it('an apex pick that is not an event', () => {
+    expect(problemsAfter((s) => { s.apexEventId = 'e-missing'; })).toMatch(/apex: unknown event e-missing/);
+  });
+
   it('a lowercase or long region code', () => {
     expect(problemsAfter((_, e) => { e('e-starfall-ep5-in').region = 'india'; })).toMatch(/ISO 3166-1 alpha-2/);
   });
