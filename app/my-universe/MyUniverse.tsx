@@ -2,18 +2,19 @@
 
 import Link from 'next/link';
 import { upcomingFor } from '../../lib/universe';
+import { withFollowTitles } from '../../lib/follows';
 import { ReleaseCard } from '../ReleaseCard';
 import { useSeed } from '../SeedProvider';
 import { useFollows } from '../useFollows';
 
 function List() {
   const seed = useSeed();
-  const { ids, ready } = useFollows();
+  const { ids, titles, ready } = useFollows();
   if (!ready) return <p className="empty">Loading your follows…</p>;
 
   // Only reached in the browser (ready is false on the server), so the viewer's zone and clock are safe to read here.
   const zone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-  const items = upcomingFor(seed, ids, new Date().toISOString());
+  const items = upcomingFor(withFollowTitles(seed, titles), ids, new Date().toISOString());
   if (items.length === 0) {
     return (
       <p className="empty">

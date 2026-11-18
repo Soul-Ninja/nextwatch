@@ -16,7 +16,7 @@ export function Sources({ event, zone }: { event: ReleaseEvent; zone: string }) 
       {sources.map((s, i) => (
         <span key={s.id}>
           {i > 0 && ', '}
-          <a href={s.url} rel="noopener noreferrer">{s.sourceName}</a>
+          <a href={s.url} rel="noopener noreferrer">{s.sourceName === 'TMDB' ? 'Release record' : s.sourceName}</a>
           {s.confidence !== 'OFFICIAL' && ' (unverified)'}
         </span>
       ))}

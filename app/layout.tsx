@@ -33,6 +33,7 @@ export default async function RootLayout({ children }: { children: ReactNode }) 
             Sample data: every title, time, platform and source on this site is fictional.
           </p>
         )}
+        {seed.unavailable && <p role="status" className="banner">The upcoming schedule could not be loaded. Search is still available; reload to retry the schedule.</p>}
         <SeedProvider seed={seed}>{children}</SeedProvider>
         <footer className="site-footer">
           <ul>

@@ -36,6 +36,7 @@ export interface ReleaseEvent {
   animeId: string;
   kind: EventKind;
   episode?: number;
+  season?: number;
   window: ReleaseWindow;
   status: EventStatus;
   region?: string; // ISO 3166-1 alpha-2; absent means unknown, never worldwide
@@ -59,6 +60,7 @@ export interface SourceEvidence {
 
 export interface Seed {
   fictional: boolean; // true -> every page using this data must say so prominently
+  unavailable?: boolean; // live data could not be loaded; never substitute fictional titles on an outage
   apexEventId?: string; // editorial pick featured at the top of the home page
   anime: Anime[];
   events: ReleaseEvent[];

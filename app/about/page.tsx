@@ -34,7 +34,7 @@ export default async function AboutPage() {
       <h2 id="privacy">Privacy</h2>
       <ul>
         <li>There are no accounts, cookies, ads or analytics.</li>
-        <li>The titles you follow are stored only in this browser (local storage). They never leave your device, and clearing this site’s data removes them.</li>
+        <li>Your followed list and public title labels are stored only in this browser (local storage). The followed list is not sent to a server. Opening a title requests its public details; clearing this site’s data removes your follows.</li>
         <li>Searches are part of the page address and are not stored by Nextwatch.</li>
       </ul>
 

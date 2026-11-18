@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { titleOf, windowLabel, whereLabel, type UniverseItem } from '../lib/universe';
+import { STATUS_LABEL, titleOf, windowLabel, whereLabel, type UniverseItem } from '../lib/universe';
 import { FollowButton } from './FollowButton';
+import { Sources } from './Sources';
 
 /** A title with its next release, as shown on Horizon and My Universe. */
 export function ReleaseCard({ item, zone }: { item: UniverseItem; zone: string }) {
@@ -11,16 +12,20 @@ export function ReleaseCard({ item, zone }: { item: UniverseItem; zone: string }
   return (
     <li className="card">
       <h3><Link href={`/anime/${anime.slug}`}>{title}</Link></h3>
+      {anime.format && <p className="meta">{anime.format === 'MOVIE' ? 'Movie' : anime.format}</p>}
       {next ? (
         <>
           <p>
             {windowLabel(next.window, zone)}
+            {next.season !== undefined && ` · Season ${next.season}`}
+            {next.episode !== undefined && ` · Episode ${next.episode}`}
             {dateChanged && <span className="badge">Date changed</span>}
           </p>
-          <p className="meta">{whereLabel(next)}</p>
+          <p className="meta">{STATUS_LABEL[next.status]} · {whereLabel(next)}</p>
+          <Sources event={next} zone={zone} />
         </>
       ) : (
-        <p className="meta">No upcoming release known</p>
+        <p className="meta">No upcoming release loaded. Open the title for release details.</p>
       )}
       <div><FollowButton animeId={anime.id} title={title} /></div>
     </li>

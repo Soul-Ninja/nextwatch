@@ -43,6 +43,7 @@ export function AnimeDetail({ animeId, builtAt }: { animeId: string; builtAt: st
     <article aria-labelledby="anime-heading">
       <h1 id="anime-heading">{title}</h1>
       {facts && <p className="zone">{facts}</p>}
+      {!seed.fictional && <p className="meta">{seed.evidence.filter((e) => e.id === `ev-${anime.id}`).map((e) => <a key={e.id} href={e.url} rel="noopener noreferrer">View source</a>)}</p>}
       <FollowButton animeId={anime.id} title={title} />
 
       {relations.length > 0 && (
@@ -57,13 +58,14 @@ export function AnimeDetail({ animeId, builtAt }: { animeId: string; builtAt: st
         <h2 id="releases-heading">Releases</h2>
         {!view.local && <p className="meta">Exact times are in Japan time until the page finishes loading.</p>}
         {events.length === 0 ? (
-          <p className="empty">No release has been announced.</p>
+          <p className="empty">{anime.format === 'TV' ? 'No upcoming TV episode is listed in this record. Movies and other releases may have separate pages.' : 'No upcoming release date is listed in this record. This does not mean no announcement exists.'}</p>
         ) : (
           <ul className="cards">
             {events.map((e) => (
               <li key={e.id} className="card">
                 <h3>
                   {windowLabel(e.window, view.zone)}
+                  {e.season !== undefined && ` · Season ${e.season}`}
                   {e.episode !== undefined && ` · Episode ${e.episode}`}
                 </h3>
                 <p>{whereLabel(e)} · {STATUS_LABEL[e.status]}</p>
@@ -86,6 +88,7 @@ export function AnimeDetail({ animeId, builtAt }: { animeId: string; builtAt: st
           </ul>
         )}
       </section>
+      {!seed.fictional && <p><Link href={`/search?${new URLSearchParams({ q: title, view: 'upcoming' })}`}>Find upcoming titles matching this name</Link></p>}
     </article>
   );
 }

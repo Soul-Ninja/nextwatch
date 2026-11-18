@@ -1,9 +1,24 @@
 import { describe, expect, it } from 'vitest';
-import { searchAnime } from './search';
+import { catalogResults, searchAnime } from './search';
 import { seed } from './seed';
 import type { Seed } from './types';
 
 const ids = (s: Seed, q: string) => searchAnime(s, q).map((a) => a.id);
+
+describe('upcoming catalog results', () => {
+  const now = '2026-11-17T06:00:00Z';
+  it('puts a dated release and an undated announcement ahead of older catalog records', () => {
+    const results = catalogResults(seed, now);
+    expect(results.at(-1)?.anime.id).toBe('a-orchard');
+    expect(results.findIndex((r) => r.anime.id === 'a-kitsune')).toBeLessThan(results.findIndex((r) => r.anime.id === 'a-orchard'));
+    expect(results[0]?.anime.id).toBe('a-starfall');
+  });
+  it('filters known upcoming events while keeping TBA followable and never inventing an event', () => {
+    const results = catalogResults(seed, now, true);
+    expect(results.some((r) => r.anime.id === 'a-orchard')).toBe(false);
+    expect(results.find((r) => r.anime.id === 'a-kitsune')?.next?.window).toEqual({ precision: 'TBA' });
+  });
+});
 
 describe('searchAnime', () => {
   it('matches case-insensitively in seed order', () => {

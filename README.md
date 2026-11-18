@@ -1,7 +1,7 @@
 # Nextwatch
 **The Anime Anticipation & Live Release Radar**
 
-> **Planning-stage repository — no app implementation is included.**
+> **Functional prototype — live TMDB integration, with labelled fictional samples when no token is configured. Not approved for public launch.**
 
 Nextwatch is an event-driven anime discovery and upcoming-release experience: **Apex** (flagship premiere), **Radar** (daily local-time airing schedule), **Horizon** (future releases), **My Universe** (personal follows) and **Pulse** (post-MVP community anticipation).
 
@@ -18,5 +18,7 @@ Nextwatch is an event-driven anime discovery and upcoming-release experience: **
 - One-click follows (saved in this browser) and My Universe at `/my-universe`.
 - Horizon at `/horizon`: upcoming titles by season, filterable by format.
 - Featured premiere (Apex) with countdown on `/`, title pages at `/anime/[slug]`, title search at `/search`, and an About page at `/about`.
-- Database, live data, deployment: **not yet implemented**.
+- With `TMDB_TOKEN`, search queries TMDB TV and movies directly, including Japanese-language animation outside the upcoming feed. Release details are loaded in batches of four: upcoming dates and TBA production entries appear first, with an Upcoming filter. Future season premiere dates are read even when no next episode is listed. Pagination preserves the query/filter; partial detail failures show a warning. Search results open `/anime/tmdb-tv-ID` or `/anime/tmdb-movie-ID` on demand. A TV record and its movies remain separate titles, with a link to search matching upcoming titles instead of guessing franchise relationships.
+- Follows still store IDs locally, with public title labels in a separate localStorage key so out-of-feed titles remain visible after reload. No episode facts are cached in browser storage; open the title to load its release details.
+- The weekly feed is still a limited discovery selection and reads only the next episode per series. Exact airing times, full weekly coverage and date-change retention need further work. No database or deployment is included.
 - First milestone: **NW-001** (data rights and coverage), in parallel with mock-only prototype work.

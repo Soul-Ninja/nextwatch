@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { span, upcomingFor } from '../lib/universe';
+import { withFollowTitles } from '../lib/follows';
 import { ReleaseCard } from './ReleaseCard';
 import { useSeed } from './SeedProvider';
 import { useFollows } from './useFollows';
@@ -13,11 +14,11 @@ const PREVIEW_SIZE = 3;
 export function UniversePreview({ builtAt }: { builtAt: string }) {
   const seed = useSeed();
   const view = useViewer(builtAt);
-  const { ids, ready } = useFollows();
+  const { ids, titles, ready } = useFollows();
   if (!ready) return null; // the browser's follow list is unknown until hydration; render nothing rather than a wrong empty state
 
   const startOf = (w?: Parameters<typeof span>[0]) => (w && span(w)?.[0]) || '\uffff';
-  const items = upcomingFor(seed, ids, view.now).sort((a, b) => startOf(a.next?.window).localeCompare(startOf(b.next?.window)));
+  const items = upcomingFor(withFollowTitles(seed, titles), ids, view.now).sort((a, b) => startOf(a.next?.window).localeCompare(startOf(b.next?.window)));
 
   return (
     <section aria-labelledby="preview-heading" className="day">

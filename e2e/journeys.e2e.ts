@@ -59,6 +59,19 @@ test.describe('with a fixed timezone', () => {
     expect(errors).toEqual([]);
   });
 
+  test('a followed title outside the upcoming feed survives reload with its public label', async ({ page }) => {
+    await page.addInitScript(() => {
+      localStorage.setItem('nextwatch:follows', JSON.stringify(['tmdb-tv-101']));
+      localStorage.setItem('nextwatch:follow-titles', JSON.stringify({ 'tmdb-tv-101': { title: 'Older sample anime', slug: 'tmdb-tv-101' } }));
+    });
+    await page.goto('/my-universe');
+    await page.reload();
+    await expect(page.getByRole('main').getByRole('link', { name: 'Older sample anime' })).toHaveAttribute('href', '/anime/tmdb-tv-101');
+    await expect(page.getByText('No upcoming release loaded.')).toBeVisible();
+    await page.getByRole('button', { name: 'Following Older sample anime' }).click();
+    await expect(page.getByText('You’re not following anything yet.')).toBeVisible();
+  });
+
   test('Apex counts down to an exact time, then makes no availability claim', async ({ page }) => {
     await at(page, new Date('2026-11-20T15:14:57Z'));
     await page.goto('/');
@@ -88,6 +101,13 @@ test.describe('without JavaScript', () => {
     await expect(page).toHaveURL(/\/search\?q=orchard/);
     await expect(page.getByText('2 titles found.')).toBeVisible();
     await expect(page.getByRole('link', { name: 'Glass Orchard Season 2' })).toBeVisible();
+    await page.getByRole('navigation', { name: 'Search release filter' }).getByRole('link', { name: 'Upcoming', exact: true }).click();
+    await expect(page).toHaveURL(/view=upcoming/);
+    await expect(page.getByRole('link', { name: 'Glass Orchard', exact: true })).toHaveCount(0);
+    await expect(page.getByRole('link', { name: 'Glass Orchard Season 2', exact: true })).toBeVisible();
+    await expect(page.getByText('Fall 2027 · Episode 1')).toBeVisible();
+    await page.getByRole('navigation', { name: 'Search release filter' }).getByRole('link', { name: 'All titles', exact: true }).click();
+    await expect(page.getByRole('link', { name: 'Glass Orchard', exact: true })).toBeVisible();
   });
 
   test('title pages show releases, sources and date-change history', async ({ page }) => {

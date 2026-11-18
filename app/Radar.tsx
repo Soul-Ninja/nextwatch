@@ -36,6 +36,7 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
       <div>
         <h4>
           <Link href={`/anime/${anime.slug}`}>{title}</Link>
+          {event.season !== undefined && ` · Season ${event.season}`}
           {event.episode !== undefined && ` · Episode ${event.episode}`}
         </h4>
         <p>{whereLabel(event)} · {STATUS_LABEL[event.status]}</p>
