@@ -3,6 +3,9 @@ import { loadAnimeSeed, loadSearch, loadSeed } from './data';
 import { fetchTmdbSeed, fetchTmdbTitle, searchTmdb } from './tmdb';
 import { seed } from './seed';
 
+// Outside Next.js there is no data cache; the wrapper itself is Next's, tested by Next.
+vi.mock('next/cache', () => ({ unstable_cache: <T,>(fn: T) => fn }));
+
 vi.mock('./tmdb', async (importOriginal) => ({
   ...await importOriginal<typeof import('./tmdb')>(),
   fetchTmdbSeed: vi.fn(), fetchTmdbTitle: vi.fn(), searchTmdb: vi.fn(),
@@ -33,6 +36,13 @@ describe('server data selection', () => {
     expect(await loadSeed()).toEqual({ fictional: false, unavailable: true, anime: [], events: [], evidence: [] });
     vi.mocked(searchTmdb).mockRejectedValue(new Error('HTTP 401'));
     await expect(loadSearch('anime', 1)).rejects.toThrow('HTTP 401');
+  });
+
+  it('fails a production build instead of shipping an empty schedule', async () => {
+    vi.stubEnv('TMDB_TOKEN', 'test');
+    vi.stubEnv('NEXT_PHASE', 'phase-production-build');
+    vi.mocked(fetchTmdbSeed).mockRejectedValue(new Error('HTTP 503'));
+    await expect(loadSeed()).rejects.toThrow('HTTP 503');
   });
 
   it('resolves an ID outside the feed, while retaining fictional slug lookup without a token', async () => {

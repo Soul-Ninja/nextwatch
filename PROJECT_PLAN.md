@@ -255,7 +255,9 @@ Weeks are planning targets, not commitments; provider permission or licensing wo
 ### Next up — planned for the week of 2026-11-23 (owner)
 - [ ] UI polish pass by the owner (layout, typography, mobile header height), keeping the function-first rules in `AGENTS.md`.
 - [ ] Friendly error page (`app/error.tsx`) and a degraded state for when TMDB is unreachable, instead of Next.js's bare "This page couldn't load".
-- [ ] Deploy to Vercel: set `TMDB_TOKEN` and `NEXT_PUBLIC_SITE_URL`, check security headers and `robots.txt` on the live site.
+- [ ] Deploy to Vercel: set `TMDB_TOKEN`, `MAL_CLIENT_ID` and `NEXT_PUBLIC_SITE_URL`, check security headers and `robots.txt` on the live site.
+- [ ] Add a Vercel firewall rate-limit rule for `/search` and `/anime/*`; the in-code limit (20 searches/minute per visitor) counts per server instance only.
+- [ ] Decide on storing previous release dates (Vercel KV or Postgres) so live postponements are recorded, as `AGENTS.md` requires.
 - [ ] Add the official TMDB logo to the attribution (from themoviedb.org/about/logos-attribution).
 - [ ] Waiting on replies: AniList (emailed 2026-11-17) and MyAnimeList (support form, 2026-11-17).
 

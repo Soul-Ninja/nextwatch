@@ -1,3 +1,4 @@
+import { unstable_cache } from 'next/cache';
 import { cache } from 'react';
 import { seed as fictionalSeed } from './seed';
 import { fetchMalShows, withBroadcastTimes } from './mal';
@@ -25,12 +26,24 @@ const withMal = async (seed: Seed): Promise<Seed> => {
   return shows ? withBroadcastTimes(seed, shows) : seed;
 };
 
+// One fixed cache key for the whole live schedule. If a refresh throws, Next.js keeps serving the last good copy
+// ("the last successfully generated data will continue to be served"), so an outage never blanks the site.
+// The token is read inside, not passed in: arguments become part of the stored cache key.
+const liveSeed = unstable_cache(
+  async () => withMal(await fetchTmdbSeed(process.env.TMDB_TOKEN!)),
+  ['live-seed-v1'],
+  { revalidate: 6 * 3600 },
+);
+
 export const loadSeed = cache(async (): Promise<Seed> => {
   const token = process.env.TMDB_TOKEN;
   if (!token) return fictionalSeed;
   try {
-    return await withMal(await fetchTmdbSeed(token));
-  } catch {
+    return await liveSeed();
+  } catch (error) {
+    // A production build must not ship an empty site: fail it loudly instead.
+    if (process.env.NEXT_PHASE === 'phase-production-build') throw error;
+    // shortcut: reached only when no good copy has ever been cached; the notice page may then stay until the next refresh.
     return { fictional: false, unavailable: true, anime: [], events: [], evidence: [] };
   }
 });
