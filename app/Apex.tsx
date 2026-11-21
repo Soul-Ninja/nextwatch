@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { countdown } from '../lib/countdown';
-import { titleOf, whereLabel, windowLabel } from '../lib/universe';
+import { titleOf, whenLabel, whereLabel } from '../lib/universe';
 import { FollowButton } from './FollowButton';
 import { useSeed } from './SeedProvider';
 import { useViewer } from './useViewer';
@@ -25,7 +25,7 @@ export function Apex({ builtAt }: { builtAt: string }) {
   const anime = event && seed.anime.find((a) => a.id === event.animeId);
   if (!event || !anime) return null;
   const title = titleOf(anime);
-  const exact = event.window.precision === 'EXACT' ? event.window.instantUtc : undefined;
+  const exact = event.window.precision === 'EXACT' && !event.expectedTime ? event.window.instantUtc : undefined;
   const left = exact && now ? countdown(exact, now) : null;
 
   return (
@@ -36,7 +36,7 @@ export function Apex({ builtAt }: { builtAt: string }) {
         {event.episode !== undefined && ` · Episode ${event.episode}`}
       </h2>
       <p>
-        {windowLabel(event.window, view.zone)} · {whereLabel(event)}
+        {whenLabel(event, view.zone)} · {whereLabel(event)}
         {!view.local && exact && ' (Japan time)'}
       </p>
       {left && (

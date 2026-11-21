@@ -38,6 +38,7 @@ export interface ReleaseEvent {
   episode?: number;
   season?: number;
   window: ReleaseWindow;
+  expectedTime?: boolean; // EXACT time inferred from a weekly broadcast slot, not announced for this episode
   status: EventStatus;
   region?: string; // ISO 3166-1 alpha-2; absent means unknown, never worldwide
   platform?: string;

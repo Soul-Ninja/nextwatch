@@ -86,6 +86,7 @@ export function seedProblems(seed: Seed): string[] {
     for (const id of e.evidenceIds) if (!evidenceIds.has(id)) at(`unknown evidence ${id}`);
     windowProblems(e.window).forEach(at);
     if (e.episode !== undefined && !(Number.isInteger(e.episode) && e.episode > 0)) at('episode must be a positive integer');
+    if (e.expectedTime && e.window.precision !== 'EXACT') at('expectedTime only applies to an EXACT window');
     if (e.season !== undefined && !(Number.isInteger(e.season) && e.season > 0)) at('season must be a positive integer');
     if (e.region !== undefined && !/^[A-Z]{2}$/.test(e.region)) at(`region "${e.region}" must be ISO 3166-1 alpha-2`);
     if (!isUtcInstant(e.updatedAt)) at('updatedAt must be a UTC instant');

@@ -31,7 +31,7 @@ function Row({ item, zone }: { item: RadarItem; zone: string }) {
   return (
     <li className="row">
       <p className="time">
-        {item.instantUtc ? <time dateTime={item.instantUtc}>{timeLabel(item.instantUtc, zone)}</time> : untimedLabel(item)}
+        {item.instantUtc ? <><time dateTime={item.instantUtc}>{timeLabel(item.instantUtc, zone)}</time>{item.event.expectedTime && <span className="meta"> expected</span>}</> : untimedLabel(item)}
       </p>
       <div>
         <h4>

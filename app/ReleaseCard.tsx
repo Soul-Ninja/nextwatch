@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { STATUS_LABEL, titleOf, windowLabel, whereLabel, type UniverseItem } from '../lib/universe';
+import { STATUS_LABEL, titleOf, whenLabel, whereLabel, type UniverseItem } from '../lib/universe';
 import { FollowButton } from './FollowButton';
 import { Sources } from './Sources';
 
@@ -16,7 +16,7 @@ export function ReleaseCard({ item, zone }: { item: UniverseItem; zone: string }
       {next ? (
         <>
           <p>
-            {windowLabel(next.window, zone)}
+            {whenLabel(next, zone)}
             {next.season !== undefined && ` · Season ${next.season}`}
             {next.episode !== undefined && ` · Episode ${next.episode}`}
             {dateChanged && <span className="badge">Date changed</span>}

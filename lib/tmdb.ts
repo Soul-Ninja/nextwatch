@@ -1,10 +1,10 @@
 import type { Anime, EventStatus, ReleaseEvent, Seed, SourceEvidence } from './types';
+import { getJson } from './http';
 import { seedProblems } from './validate';
 
 // TMDB is a general film/TV database: episode dates come without times, so events are DAY precision at best.
 const API = 'https://api.themoviedb.org/3';
 const ANIMATION = 16;
-const REVALIDATE_SECONDS = 6 * 3600; // TMDB allows caching for at most 6 months
 // shortcut: theatrical dates are kept for these countries only (Japan first, then likely audiences); widen when real users ask.
 export const MOVIE_REGIONS = ['JP', 'IN', 'US'];
 
@@ -199,30 +199,9 @@ export function mapMovie(movie: MovieSummary & { status?: string }, dates: Relea
 
 type Fetch = typeof fetch;
 
-/**
- * GET a TMDB path, waiting and retrying on dropped connections, timeouts, 429 and 5xx.
- * Throws after 3 attempts so a broken feed is loud, not silent.
- */
-export async function tmdbGet<T>(path: string, token: string, fetchImpl: Fetch = fetch, sleep = (ms: number) => new Promise((r) => setTimeout(r, ms))): Promise<T> {
-  for (let attempt = 1; ; attempt++) {
-    let res: Response;
-    try {
-      res = await fetchImpl(`${API}${path}`, {
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/json' },
-        signal: AbortSignal.timeout(10_000),
-        next: { revalidate: REVALIDATE_SECONDS },
-      } as RequestInit);
-    } catch (error) {
-      if (attempt >= 3) throw new Error(`TMDB ${path} failed: ${String(error)}`);
-      await sleep(1000 * attempt);
-      continue;
-    }
-    if (res.ok) return (await res.json()) as T;
-    const retryable = res.status === 429 || res.status >= 500;
-    if (!retryable || attempt >= 3) throw new Error(`TMDB ${path} failed: HTTP ${res.status}`);
-    const wait = Number(res.headers.get('retry-after'));
-    await sleep(Number.isFinite(wait) && wait > 0 ? wait * 1000 : 1000 * attempt);
-  }
+/** GET a TMDB path with the shared retry rules (see lib/http.ts). */
+export function tmdbGet<T>(path: string, token: string, fetchImpl: Fetch = fetch, sleep?: (ms: number) => Promise<unknown>): Promise<T> {
+  return getJson<T>(`TMDB ${path}`, `${API}${path}`, { Authorization: `Bearer ${token}` }, fetchImpl, sleep);
 }
 
 // Requests run in small batches so one refresh (~150 calls) stays far below TMDB's ~40 per second.

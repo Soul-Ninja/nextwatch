@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import type { Anime } from '../../../lib/types';
-import { span, STATUS_LABEL, titleOf, whereLabel, windowLabel } from '../../../lib/universe';
+import { span, STATUS_LABEL, titleOf, whenLabel, whereLabel, windowLabel } from '../../../lib/universe';
 import { FollowButton } from '../../FollowButton';
 import { useSeed } from '../../SeedProvider';
 import { Sources } from '../../Sources';
@@ -64,7 +64,7 @@ export function AnimeDetail({ animeId, builtAt }: { animeId: string; builtAt: st
             {events.map((e) => (
               <li key={e.id} className="card">
                 <h3>
-                  {windowLabel(e.window, view.zone)}
+                  {whenLabel(e, view.zone)}
                   {e.season !== undefined && ` · Season ${e.season}`}
                   {e.episode !== undefined && ` · Episode ${e.episode}`}
                 </h3>

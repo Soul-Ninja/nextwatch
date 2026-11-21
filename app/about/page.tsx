@@ -26,6 +26,7 @@ export default async function AboutPage() {
       ) : (
         <>
           <p>Release dates come from <a href="https://www.themoviedb.org" rel="noopener noreferrer">TMDB</a> (The Movie Database), a community-built film and TV database, and are refreshed every few hours. TMDB lists TV episodes by the date they air in Japan, without a time, so those show as “time not announced”.</p>
+          <p>Where TMDB gives only a date, the expected time comes from the show’s weekly broadcast slot on <a href="https://myanimelist.net" rel="noopener noreferrer">MyAnimeList</a> and is marked “expected”: breaks, specials and delays can change it.</p>
           <p>Each release lists its source and when it was last checked. Sources marked “unverified” are not official announcements.</p>
           <p className="meta">This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.</p>
         </>

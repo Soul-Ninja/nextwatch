@@ -65,6 +65,10 @@ export function windowLabel(w: ReleaseWindow, timeZone: string): string {
   }
 }
 
+/** A release date as windowLabel gives it, marked when the time is inferred from a weekly broadcast slot. */
+export const whenLabel = (event: ReleaseEvent, timeZone: string) =>
+  `${windowLabel(event.window, timeZone)}${event.expectedTime ? ' (expected)' : ''}`;
+
 /** Where an event happens, without implying anything beyond its region and platform. */
 export function whereLabel(event: ReleaseEvent): string {
   const country = event.region ? regionNames.of(event.region) ?? event.region : 'region unknown';

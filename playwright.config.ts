@@ -16,6 +16,6 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 240_000,
-    env: { TMDB_TOKEN: '' }, // tests assert on the fictional fixtures, never on live TMDB data
+    env: { TMDB_TOKEN: '', MAL_CLIENT_ID: '' }, // tests assert on the fictional fixtures, never on live provider data
   },
 });

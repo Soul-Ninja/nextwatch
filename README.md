@@ -11,7 +11,7 @@ Nextwatch is an event-driven anime discovery and upcoming-release experience: **
 3. [`docs/DATA_SOURCES.md`](docs/DATA_SOURCES.md) — provider evaluation, provenance and copyright gate.
 
 ## Current status
-- Data: **TMDB** (approved for non-commercial use). Copy `.env.example` to `.env.local` and set `TMDB_TOKEN` to load live data; without it the site shows labelled fictional samples. AniList and MyAnimeList are pending permission.
+- Data: **TMDB** (approved for non-commercial use). Copy `.env.example` to `.env.local` and set `TMDB_TOKEN` to load live data; without it the site shows labelled fictional samples. Set `MAL_CLIENT_ID` as well to add expected weekly broadcast times from **MyAnimeList** (allowed within its guidelines). AniList is pending a reply.
 - Data model, validator and fictional fixtures: in `lib/` (NW-002).
 - Checks: `npm run typecheck`, `npm run lint`, `npm test` (unit), `npm run e2e` (browser tests; first run `npx playwright install chromium`). CI runs all of them on every push.
 - Radar (this week in your local time) on `/`, using fictional data. Run `npm run dev` and open http://localhost:3000.
